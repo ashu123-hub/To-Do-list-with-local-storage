@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> To-Do List 🎉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Comic Sans MS", cursive, sans-serif;
+        }
+
+        body {
+            background: url('bg image.webp') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            width: 400px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: pop-in 0.5s ease-in-out;
+        }
+
+        @keyframes pop-in {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        h2 {
+            color: #150750;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        input, select {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #060c82;
+            border-radius: 10px;
+            outline: none;
+        }
+
+        button {
+            padding: 8px 10px;
+            border: none;
+            background: #2b17b0;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 14px;
+            width: auto;
+        }
+
+        button:hover {
+            background: #260574;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background: #ffe8eb;
+            padding: 12px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>LISTIFY</h2>
+        <div class="input-container">
+            <input type="text" id="taskInput" placeholder="Add a Task...">
+            <select id="category">
+                <option value="Personal">Personal</option>
+                <option value="Work">Work</option>
+                <option value="Study">Study</option>
+                <option value="Finance">Finance</option>
+                <option value="Travel">Travel</option>
+            </select>
+            <button onclick="addTask()">➕</button>
+        </div>
+        
+        <label for="filter">Filter by Category:</label>
+        <select id="filter" onchange="renderTasks()">
+            <option value="All">All</option>
+            <option value="Personal">Personal</option>
+            <option value="Work">Work</option>
+            <option value="Study">Study</option>
+            <option value="Finance">Finance</option>
+            <option value="Travel">Travel</option>
+        </select>
+        
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        function addTask() {
+            let taskInput = document.getElementById("taskInput").value.trim();
+            let category = document.getElementById("category").value;
+
+            if (taskInput === "") return;
+
+            let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks.push({ text: taskInput, category: category });
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+
+            document.getElementById("taskInput").value = "";
+            renderTasks();
+        }
+
+        function renderTasks() {
+            let taskList = document.getElementById("taskList");
+            let filter = document.getElementById("filter").value;
+            taskList.innerHTML = "";
+
+            let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks.forEach((task, index) => {
+                if (filter === "All" || task.category === filter) {
+                    let li = document.createElement("li");
+                    li.innerHTML = `<strong>${task.category}:</strong> ${task.text}`;
+                    
+                    let removeBtn = document.createElement("button");
+                    removeBtn.textContent = "❌";
+                    removeBtn.onclick = () => removeTask(index);
+                    
+                    li.appendChild(removeBtn);
+                    taskList.appendChild(li);
+                }
+            });
+        }
+
+        function removeTask(index) {
+            let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks.splice(index, 1);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        document.addEventListener("DOMContentLoaded", renderTasks);
+    </script>
+</body>
+</html>
